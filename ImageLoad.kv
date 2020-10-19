@@ -1,0 +1,21 @@
+#:kivy 1.0.9
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
+ScreenTransition:
+    transisiton: NoTransition()
+    LoadScreen:
+    DisplayScreen:
+
+<LoadScreen>:
+    name:"load"
+    Home:
+
+<DisplayScreen>:
+    name:"display"
+    Display:
+        id:"displayLayout"
+    
+
+
+
+
