@@ -27,7 +27,6 @@ class DisplayScreen(Screen):
         child = self.children[0]
         child.state = 1
         child.update_rect()
-    
     pass
 
 class ScreenTransition(ScreenManager):
@@ -62,7 +61,7 @@ class Home(FloatLayout):
             image = Image(source=path)
             imageRatio = image.image_ratio
             with layout.canvas:
-                layout.rect = Rectangle(texture=image.texture, size=(layout.height / 2 * imageRatio, layout.height / 2))
+                layout.rect = Rectangle(texture=image.texture, size=(layout.height * imageRatio, layout.height))
                 layout.rect.pos = (layout.center[0] - layout.rect.size[0] / 2, layout.center[1] - layout.rect.size[1] / 2)
             self.parent.parent.current = "display"
 
@@ -140,13 +139,13 @@ class Display(FloatLayout):
         elif (fileType != "jpg") and (fileType != "png"):
             self.popup_invalid_fileType()
         else:
-            print("seco:",self.imageLayout)
             image = Image(source=path)
             self.imageRatio = image.image_ratio
             with self.imageLayout.canvas:
-                if (len(self.imageLayout.canvas.children) != 0):
-                    self.imageLayout.canvas.remove(self.imageLayout.canvas.children[0])
-                self.imageLayout.rect = Rectangle(texture=image.texture, size=(self.imageLayout.size_hint_y / 2 * self.imageRatio, self.imageLayout.size_hint_y / 2))
+                # if (len(self.imageLayout.canvas.children) != 0):
+                #     self.imageLayout.canvas.remove(self.imageLayout.rect)
+                self.imageLayout.canvas.clear()
+                self.imageLayout.rect = Rectangle(texture=image.texture, size=(self.imageLayout.height / 2 * self.imageRatio, self.imageLayout.height / 2))
                 self.imageLayout.rect.pos = (self.imageLayout.center[0] - self.imageLayout.rect.size[0] / 2, self.imageLayout.center[1] - self.imageLayout.rect.size[1] / 2)
             self.state = 1
     
@@ -194,7 +193,6 @@ class Display(FloatLayout):
             if (self.imageLayout.rect.size[0] * ratio <= self.imageLayout.size[0]) and (self.imageLayout.rect.size[1] * ratio <= self.imageLayout.size[1]):  
                 self.imageLayout.rect.size = (self.imageLayout.rect.size[0]*ratio,self.imageLayout.rect.size[1]*ratio)
                 self.imageLayout.rect.pos = (self.imageLayout.center[0] - self.imageLayout.rect.size[0] / 2, self.imageLayout.center[1] - self.imageLayout.rect.size[1] / 2)
-                Rotate(origin=self.imageLayout.center,angle=45)                
 
 
   
