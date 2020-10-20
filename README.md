@@ -4,7 +4,7 @@
 # directory structure
 * ImageLoad.py: main program, run to implement the file loader gui; written used Python framework kiwy
 * ImageLoad.kv: a kv file that mainly contains screen and screen manager info, which will be used by "ImageLoad.py"
-* image1.jpg: 
+* image1.jpg, image2.jpg, image3.png: examples that could be used to to test the program
 
 # function description:
 * User can load images files "*.jpg" or "*.png" after entering a correct file path
@@ -17,3 +17,6 @@
   - Color/Grey buttons for Color/Grey image
 
 * The position of loaded image will be automatically adjusted by the window size
+
+# contribution
+* Ruisu Zhang
