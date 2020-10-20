@@ -11,6 +11,9 @@
 * A popup window will show up if the file path or file type is invalid
 * User can loaded new images as they want, and each time the newly loaded one will replace the previous one on the screen.
 * User can do simple operations on the loaded image, such as
-  - zoom in/zoon out, where zoom in is limited by the window size
-  - 
+
+  - +/- buttons for zoom-in/-out, where zoom in is limited by the window size
+  - CW/CCW buttons for clockwise/counter-clockwise rotation
+  - Color/Grey buttons for Color/Grey image
+
 * The position of loaded image will be automatically adjusted by the window size
