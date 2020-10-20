@@ -16,8 +16,11 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.anchorlayout import AnchorLayout
+from PIL import Image as PILImage
 
 firstImagePath = ""
+greyPath = 'greyscale.png'
+originPath = 'color.png'
 
 class LoadScreen(Screen):
     pass
@@ -59,6 +62,9 @@ class Home(FloatLayout):
         else:
             layout = self.parent.parent.get_screen("display").children[0].children[0]
             image = Image(source=path)
+            PILImage.open(path).save(originPath)
+            imgGrey = PILImage.open(path).convert('LA')
+            imgGrey.save(greyPath)
             imageRatio = image.image_ratio
             with layout.canvas:
                 layout.rect = Rectangle(texture=image.texture, size=(layout.height * imageRatio, layout.height))
@@ -115,12 +121,27 @@ class Display(FloatLayout):
         
         self.resizeLayout = GridLayout(cols=2, size_hint_x=0.2, row_force_default=True, row_default_height=50, padding=10, spacing=[10,10])
         self.menuLayout.add_widget(self.resizeLayout)
+
         self.inButton = Button(text="+", font_size=50)
         self.inButton.bind(on_press=self.zoonIn)
         self.resizeLayout.add_widget(self.inButton)
         self.outButton = Button(text = "-",font_size = 50)
         self.resizeLayout.add_widget(self.outButton)
         self.outButton.bind(on_press=self.zoomOut)
+
+        self.clcButton = Button(text="CW", font_size=20)
+        self.clcButton.bind(on_press=self.clcwiseRot)
+        self.resizeLayout.add_widget(self.clcButton)
+        self.ctclcButton = Button(text = "CCW",font_size = 20)
+        self.resizeLayout.add_widget(self.ctclcButton)
+        self.ctclcButton.bind(on_press=self.ctclcwiseRot)
+
+        self.colorButton = Button(text="Color", font_size=15)
+        self.colorButton.bind(on_press=self.color)
+        self.resizeLayout.add_widget(self.colorButton)
+        self.greyButton = Button(text = "Grey",font_size = 15)
+        self.resizeLayout.add_widget(self.greyButton)
+        self.greyButton.bind(on_press=self.grey)
 
         # right side: displaying an image
         self.imageLayout = GridLayout(cols=1, size_hint=(0.8, 1),pos_hint={"right":1})
@@ -129,7 +150,8 @@ class Display(FloatLayout):
         self.imageLayout.bind(pos=self.update_rect, size=self.update_rect)
         
         self.state = 0
-        
+        self.angle = 0
+  
 
     def loadButtonPressed(self, instance):
         path = self.inputText.text
@@ -140,15 +162,17 @@ class Display(FloatLayout):
             self.popup_invalid_fileType()
         else:
             image = Image(source=path)
+            imgGrey = PILImage.open(path).convert('LA')
+            imgGrey.save(greyPath)
+            PILImage.open(path).save(originPath)
             self.imageRatio = image.image_ratio
             with self.imageLayout.canvas:
-                # if (len(self.imageLayout.canvas.children) != 0):
-                #     self.imageLayout.canvas.remove(self.imageLayout.rect)
                 self.imageLayout.canvas.clear()
                 self.imageLayout.rect = Rectangle(texture=image.texture, size=(self.imageLayout.height / 2 * self.imageRatio, self.imageLayout.height / 2))
                 self.imageLayout.rect.pos = (self.imageLayout.center[0] - self.imageLayout.rect.size[0] / 2, self.imageLayout.center[1] - self.imageLayout.rect.size[1] / 2)
             self.state = 1
-    
+            self.angle = 0
+
     def update_rect(self, *args): 
         if self.state == 1:
             with self.imageLayout.canvas:
@@ -202,7 +226,52 @@ class Display(FloatLayout):
             self.imageLayout.rect.size = (self.imageLayout.rect.size[0]/ratio,self.imageLayout.rect.size[1]/ratio)
             self.imageLayout.rect.pos = (self.imageLayout.center[0]- self.imageLayout.rect.size[0]/2,self.imageLayout.center[1]-self.imageLayout.rect.size[1]/2)
 
+    def clcwiseRot(self, instance):
+        self.angle -= 10
+        with self.imageLayout.canvas:
+            newText = self.imageLayout.rect.texture
+            newSize = self.imageLayout.rect.size
+            newPos = self.imageLayout.rect.pos
+            self.imageLayout.canvas.clear()
+            Rotate(origin = self.imageLayout.center,angle=self.angle)
+            self.imageLayout.rect = Rectangle(texture=newText, size=newSize)
+            self.imageLayout.rect.pos = newPos
     
+    def ctclcwiseRot(self, instance):
+        self.angle += 10
+        with self.imageLayout.canvas:
+            newText = self.imageLayout.rect.texture
+            newSize = self.imageLayout.rect.size
+            newPos = self.imageLayout.rect.pos
+            self.imageLayout.canvas.clear()
+            Rotate(origin = self.imageLayout.center,angle=self.angle)
+            self.imageLayout.rect = Rectangle(texture=newText, size=newSize)
+            self.imageLayout.rect.pos = newPos
+
+    def grey(self, instance):
+        with self.imageLayout.canvas:
+            im = Image(source=greyPath)
+            im.reload()
+            newText = im.texture
+            newSize = self.imageLayout.rect.size
+            newPos = self.imageLayout.rect.pos
+            self.imageLayout.canvas.clear()
+            Rotate(origin = self.imageLayout.center,angle=self.angle)
+            self.imageLayout.rect = Rectangle(texture=newText, size=newSize)
+            self.imageLayout.rect.pos = newPos
+
+    def color(self, instance):
+        with self.imageLayout.canvas:
+            im = Image(source=originPath)
+            im.reload()
+            newText = im.texture
+            newSize = self.imageLayout.rect.size
+            newPos = self.imageLayout.rect.pos
+            self.imageLayout.canvas.clear()
+            Rotate(origin = self.imageLayout.center,angle=self.angle)
+            self.imageLayout.rect = Rectangle(texture=newText, size=newSize)
+            self.imageLayout.rect.pos = newPos
+        
 class ImageLoadApp(App):
     def build(self):
         return Builder.load_file("./ImageLoad.kv")
